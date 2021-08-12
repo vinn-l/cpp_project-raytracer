@@ -8,7 +8,7 @@ int main() {
     const int image_height = 256;
 
     // Create PPM Image
-    // Apparently Windows machine creates PPM file with UTF-16 encoding, and GIMP is unable to open this without changing the PPM encoding to ASCII.
+    std::cerr << "Creating PPM Image..." << std::endl;
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
@@ -26,5 +26,5 @@ int main() {
         }
     }
 
-    return 0
+    return 0;
 }
