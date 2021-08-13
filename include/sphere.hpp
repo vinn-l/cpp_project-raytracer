@@ -102,7 +102,7 @@ public:
     // Basically, we take the hit point of the ray and subtract with the centre of the sphere. (P - C)
     vec3 normal(const vec3 &hit_point) const
     {
-        return hit_point - center;
+        return (hit_point - center).normalize();
     }
 };
 

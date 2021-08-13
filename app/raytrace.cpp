@@ -40,8 +40,8 @@ int main() {
     hittable_list world;
     sphere sphere1(vec3(-0.75, -0.5, -1), 0.5);
     sphere sphere2(vec3(0.25, 0.5, -1.5), 0.5);
-    sphere sphere3(vec3(-0.75, -0.5, -100), 50);
-    sphere sphere4(vec3(-1, 1, -0.5), 0.5);
+    sphere sphere3(vec3(0.0, 0.0, -30.0), 10.0);
+    sphere sphere4(vec3(-1.0, 1.0, -0.5), 0.5);
     world.add(&sphere1);
     world.add(&sphere2);
     world.add(&sphere3);
