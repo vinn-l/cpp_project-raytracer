@@ -93,9 +93,12 @@ public:
                 rec.p = r.at(rec.t);
                 rec.normal = normal(rec.p); // this normal is always outwards
                 rec.set_ray_side(r, rec.normal);
+                return true;
+            }
+            else{
+                return false;
             }
         }
-        return true;
     }
 
     // To get the direction of the normal of a sphere (used for reflecting rays)

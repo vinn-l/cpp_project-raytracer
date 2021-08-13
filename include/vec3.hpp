@@ -57,6 +57,25 @@ public:
         return *this;
     }
 
+    // Random function that returns a vec3 that is randomized for diffuse/Lambertian materials
+    // will be between 0 <= r < 1
+    vec3 static random(){
+        return vec3(rand() / double(RAND_MAX + 1.0), rand() / double(RAND_MAX + 1.0), rand() / double(RAND_MAX + 1.0));
+    }
+
+    vec3 static random(double min, double max){
+        return vec3(min, min, min) + (max - min) * random();
+    }
+
+    vec3 static random_in_unit_sphere(){
+        while (true){
+            auto p = random(-1, 1);
+            if (p.length() * p.length() >= 1) continue; // if p is not in unit sphere, try again
+            return p;
+        }
+    }
+
+
 private:
     friend std::ostream &operator<<(std::ostream &out, const vec3 &v);
     friend vec3 operator+(const vec3 &u, const vec3 &v);
