@@ -2,6 +2,7 @@
 #include "vec3.hpp"
 #include "color.hpp"
 #include "ray.hpp"
+#include "sphere.hpp"
 
 // Making a simple ray tracer
 // For each pixel, the ray tracer will send a ray and figure out the color met by those rays.
@@ -11,8 +12,15 @@
 color ray_color(const ray &r) {
     vec3 unit_direction = r.direction().normalize();
 
-    // Create a simple gradient depending on pixel position for now
+    // Create a sphere at -1 of z-axis (in front of camera), with 0.5 radius
+    sphere s(vec3(0, 0, -1), 0.5);
 
+    // Return black if the ray hits the sphere created
+    if (s.intersect(r)){
+        return color(0, 0, 0); 
+    }
+
+    // Create a simple gradient depending on pixel position for now
     // Depending on height of ray, go from white to full red
     // unit_direction.y() goes 1 to -1, therefore add 1 to not have negative and divide by 0.5 to stay within 0 and 1
     // t now goes from 1 to 0
@@ -29,7 +37,7 @@ int main() {
     // Camera Properties
     auto viewport_height = 2.0;
     auto viewport_width = viewport_height * asp_ratio; // 3.56
-    auto focal_length = 1.0; // distance between camera to the pixel plane
+    auto focal_length = 1.0; // distance between the projection plane(camera) and the projection point
 
     auto origin = point3(0, 0, 0);
     auto horizontal = vec3(viewport_width, 0, 0);
