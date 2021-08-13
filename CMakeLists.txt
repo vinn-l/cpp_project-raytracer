@@ -46,9 +46,9 @@ add_executable(raytrace app/raytrace.cpp)
 # target_link_libraries(test_thread_pool thread_pool_lib)
 
 # Specify the include directories for library
-# target_include_directories(test_queue PUBLIC
-# 	include
-# 	"${CMAKE_CURRENT_BINARY_DIR}/include")
+target_include_directories(raytrace PUBLIC
+ 	include
+	"${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # Specify the include directories for library
 # target_include_directories(test_thread_pool PUBLIC
