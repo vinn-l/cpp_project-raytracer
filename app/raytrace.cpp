@@ -3,6 +3,7 @@
 #include "color.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
+#include "hittable_list.hpp"
 
 // Making a simple ray tracer
 // For each pixel, the ray tracer will send a ray and figure out the color met by those rays.
@@ -10,21 +11,27 @@
 // 2. Determine which objects the ray intersects.
 // 3. Get the color of that intersection point.
 color ray_color(const ray &r) {
-    vec3 unit_direction = r.direction().normalize();
+    vec3 unit_direction = r.direction();
 
     // Create a sphere at -1 of z-axis (in front of camera), with 0.5 radius
     sphere s(vec3(0, 0, -1), 0.5);
 
     // Return black if the ray hits the sphere created
-    if (s.intersect(r)){
-        return color(0, 0, 0); 
+    auto t = s.intersect(r);
+    if (s.intersect(r) > 0){ // if t is more than 0
+        // Get the normal at t
+        vec3 normal = s.normal(r.at(t));
+        vec3 unit_normal = normal.normalize();
+
+        // Visualize the unit normal by adding 1 and divide 2, because unit_vector range from -1 to 1
+        return 0.5 * color(unit_normal.x() + 1, unit_normal.y() + 1, unit_normal.z() + 1); 
     }
 
     // Create a simple gradient depending on pixel position for now
     // Depending on height of ray, go from white to full red
     // unit_direction.y() goes 1 to -1, therefore add 1 to not have negative and divide by 0.5 to stay within 0 and 1
     // t now goes from 1 to 0
-    auto t = 0.5 * (unit_direction.y() + 1.0);
+    t = 0.5 * (unit_direction.y() + 1.0);
     return (color(1.0, 1.0, 1.0) * t + color(0.5, 0, 0) * (1.0 - t));
 }
 
