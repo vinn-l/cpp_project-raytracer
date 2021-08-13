@@ -27,7 +27,8 @@ color ray_color(const ray &r, const hittable_list &world, int depth)
 
     // find the closest hittable and render that hittable's color
     // hit(const ray &ray_in, double t_min, double t_max, hit_record &rec)
-    if (world.hit_all(r, (double)0, std::numeric_limits<double>::infinity(), rec))
+    // we set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just reflected off, so we want to ignore these cases.
+    if (world.hit_all(r, (double)0.001, std::numeric_limits<double>::infinity(), rec))
     {
         // return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
 
@@ -104,8 +105,12 @@ int main()
                 // summation of the pixel colors
                 pixel_color += ray_color(r, world, 0); 
             }
-            // get average
+            // Get average of the samples for each pixel
             pixel_color /= SAMPLES_PER_PIXEL;
+
+            // Gamma-correct for gamma=2.0.
+            pixel_color = color(sqrt(pixel_color.r()), sqrt(pixel_color.g()), sqrt(pixel_color.b()));
+
             // auto b = 0.25;
 
             // Ray with origin at camera, direction going towards the pixel, remember u is the pixel at horizontal (width), v is pixel at vertical (height)
