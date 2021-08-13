@@ -25,7 +25,7 @@
 // (t^2)*b.b + 2tb.(A-C) + (A-C).(A-C) - r^2 = 0
 // The above equation is to find the roots t
 
-class sphere : hittable
+class sphere : public hittable
 {
 public:
     // position of sphere

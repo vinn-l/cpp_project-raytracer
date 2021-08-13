@@ -8,11 +8,10 @@ class hittable_list
 {
 public:
     // Constructor
-    hittable_list();
+    hittable_list(){};
 
-    void add(hittable *hit)
-    {
-        hittables.push_back(hit);
+    void add(hittable* object){
+        hittables.push_back(object);
     }
 
     void clear()
@@ -21,7 +20,7 @@ public:
     }
 
     // function that takes in a ray to see if the ray hits what hittables in the list
-    bool hit(const ray &ray_in, double t_min, double t_max, hit_record &rec)
+    bool hit_all(const ray &ray_in, double t_min, double t_max, hit_record &rec) const
     {
         hit_record curr_record;
         bool hit_something = false;
@@ -40,13 +39,13 @@ public:
                 t = curr_record.t;
                 rec = curr_record;
             }
-            return hit_something = true;
         }
-    };
+        return hit_something;
+    }
 
 private:
     // list of hittable
-    std::vector<hittable *> hittables;
+    std::vector<hittable*> hittables;
 };
 
 #endif
