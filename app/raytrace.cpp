@@ -8,23 +8,27 @@
 #include <limits>
 
 #define MAX_DEPTH 50
+#define SAMPLES_PER_PIXEL 20 // Increase this to get better quality, but requires more time
 
 // Making a simple ray tracer
 // For each pixel, the ray tracer will send a ray and figure out the color met by those rays.
 // 1. Shoot a ray from the camera.
 // 2. Determine which objects the ray intersects.
 // 3. Get the color of that intersection point.
-color ray_color(const ray &r, const hittable_list& world, int depth) {
+color ray_color(const ray &r, const hittable_list &world, int depth)
+{
     hit_record rec;
 
     // If we reflected way to many times, light is all absorbed.
-    if (depth > MAX_DEPTH) {
+    if (depth > MAX_DEPTH)
+    {
         return color(0, 0, 0);
     }
 
     // find the closest hittable and render that hittable's color
     // hit(const ray &ray_in, double t_min, double t_max, hit_record &rec)
-    if(world.hit_all(r, (double)0, std::numeric_limits<double>::infinity(), rec)){
+    if (world.hit_all(r, (double)0, std::numeric_limits<double>::infinity(), rec))
+    {
         // return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
 
         // find the reflection ray
@@ -43,7 +47,8 @@ color ray_color(const ray &r, const hittable_list& world, int depth) {
     return (color(1.0, 1.0, 1.0) * t + color(0.5, 0, 0) * (1.0 - t));
 }
 
-int main() {
+int main()
+{
     // Image Properties
     const auto asp_ratio = 16.0 / 9.0;
     const int image_width = 500;
@@ -55,8 +60,8 @@ int main() {
     sphere sphere2(vec3(0.25, 0.5, -1.5), 0.5);
     sphere sphere3(vec3(0.0, 0.0, -30.0), 10.0);
     sphere sphere4(vec3(-1.0, 1.0, -0.5), 0.5);
-    sphere sphere5(vec3(0,0,-1), 0.5);
-    sphere sphere6(vec3(0,-100.5,-1), 100);
+    sphere sphere5(vec3(0, 0, -1), 0.5);
+    sphere sphere6(vec3(0, -100.5, -1), 100);
     world.add(&sphere1);
     world.add(&sphere2);
     world.add(&sphere3);
@@ -67,23 +72,40 @@ int main() {
     // Camera Properties
     auto viewport_height = 2.0;
     auto viewport_width = viewport_height * asp_ratio; // 3.56
-    auto focal_length = 1.0; // distance between the projection plane(camera) and the projection point
+    auto focal_length = 1.0;                           // distance between the projection plane(camera) and the projection point
 
     auto origin = point3(0, 0, 0);
     auto horizontal = vec3(viewport_width, 0, 0);
     auto vertical = vec3(0, viewport_height, 0);
-    auto lower_left_corner = origin - horizontal/2 - vertical/2 - vec3(0, 0, focal_length);
+    auto lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
 
     // Create PPM Image
     std::cerr << "Creating PPM Image..." << std::endl;
 
-    std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+    std::cout << "P3\n"
+              << image_width << ' ' << image_height << "\n255\n";
 
-    for (int j = 0; j < image_height; j++) {
-        std::cerr << "\rRaytracing line " << j + 1 << " out of " << image_height << std::flush;
-        for (int i = 0; i < image_width; ++i) {
-            auto u = double(i) / (image_width-1); // r will go from 0 to 1
-            auto v = double(j) / (image_height-1); // g will go from 0 to 1
+    for (int j = 0; j < image_height; j++)
+    {
+        std::cerr << "\rRaytracing horizontal line " << j + 1 << " out of " << image_height << std::flush;
+        for (int i = 0; i < image_width; ++i)
+        {
+            color pixel_color(0, 0, 0);
+
+            // Shoot multiple samples for anti-aliasing
+            for (int sample = 0; sample < SAMPLES_PER_PIXEL; sample++)
+            {
+                // add a random value between 0 and 1 but not 1
+                auto u = (double(i) + rand()/(RAND_MAX + 1.0))/ (image_width - 1);  // u will go from 0 to 1
+                auto v = (double(j) + rand()/(RAND_MAX + 1.0))/ (image_height - 1); // v will go from 0 to 1
+
+                ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
+
+                // summation of the pixel colors
+                pixel_color += ray_color(r, world, 0); 
+            }
+            // get average
+            pixel_color /= SAMPLES_PER_PIXEL;
             // auto b = 0.25;
 
             // Ray with origin at camera, direction going towards the pixel, remember u is the pixel at horizontal (width), v is pixel at vertical (height)
@@ -91,12 +113,12 @@ int main() {
             // lower_left_corner represents the bottom left pixel point3.
             // So basically, lower_left_corner + u*horizontal + (1 - v)*vertical gives the pixel position, then minus origin position to get the ray direction.
             // 1 - v becase v goes from 0 to 1, but we are writing our PPM image from top to bottom, so we need to go from 1 to 0.
-            ray r(origin, lower_left_corner + u*horizontal + (1 - v)*vertical - origin);
+            // ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
 
-            auto pixel = ray_color(r, world, 0);
+            // auto pixel = ray_color(r, world, 0);
 
             // r, g, b are in the range [0,1]
-            write_color(std::cout, pixel);
+            write_color(std::cout, pixel_color);
         }
     }
 

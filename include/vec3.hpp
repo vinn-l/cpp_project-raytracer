@@ -35,7 +35,10 @@ public:
 
     vec3 &operator*=(const double t)
     {
-        return *this *= t;
+        e[0] *= t;
+        e[1] *= t;
+        e[2] *= t;
+        return *this;
     }
 
     vec3 &operator/=(const double t)

@@ -17,6 +17,35 @@ public:
     double g() const { return e[1]; }
     double b() const { return e[2]; }
 
+    // Negation
+    color operator-() const { return color(-e[0], -e[1], -e[2]); }
+
+    // Return by value
+    double operator[](int i) const { return e[i]; }
+    double &operator[](int i) { return e[i]; }
+
+    // Arithmetical operators
+    color &operator+=(const color &v)
+    {
+        e[0] += v.e[0];
+        e[1] += v.e[1];
+        e[2] += v.e[2];
+        return *this;
+    }
+
+    color &operator*=(const double t)
+    {
+        e[0] *= t;
+        e[1] *= t;
+        e[2] *= t;
+        return *this;
+    }
+
+    color &operator/=(const double t)
+    {
+        return *this *= 1 / t;
+    }
+
 private:
     friend std::ostream &operator<<(std::ostream &out, const color &v);
     friend color operator+(const color &u, const color &v);
@@ -82,8 +111,8 @@ double dot(const color &u, const color &v)
 color cross(const color &u, const color &v)
 {
     return color(u.e[1] * v.e[2] - u.e[2] * v.e[1],
-                u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                u.e[0] * v.e[1] - u.e[1] * v.e[0]);
+                 u.e[2] * v.e[0] - u.e[0] * v.e[2],
+                 u.e[0] * v.e[1] - u.e[1] * v.e[0]);
 }
 
 #endif
