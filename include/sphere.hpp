@@ -37,7 +37,7 @@ public:
     material *mat;
     sphere(
         const vec3 &c,
-        const float &r,
+        const double &r,
         material* mat) : center(c), radius(r), radius2(r * r), mat(mat)
     {
     }

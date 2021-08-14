@@ -64,7 +64,24 @@ private:
 // Arguments are output stream and color color
 void write_color(std::ostream &os, const color &color)
 {
-    os << static_cast<int>(256 * color.r()) << " " << static_cast<int>(256 * color.g()) << " " << static_cast<int>(256 * color.b()) << "\n";
+    auto r = color.r();
+    auto g = color.g();
+    auto b = color.b();
+    
+    // If light emmisive materials results in light being > 1.0, make it to 0.999 so that it will be printed as 255 for PPM file
+    if (color.r() >= 1){
+        r = 0.999;
+    }
+
+    if (color.g() >= 1){
+        g = 0.999;
+    }
+
+    if (color.b() >= 1){
+        b = 0.999;
+    }
+
+    os << static_cast<int>(256 * r) << " " << static_cast<int>(256 * g) << " " << static_cast<int>(256 * b) << "\n";
 }
 
 // color Utility Functions

@@ -8,7 +8,7 @@
 #include <limits>
 
 #define MAX_DEPTH 50
-#define SAMPLES_PER_PIXEL 20 // Increase this to get better quality, but requires more time
+#define SAMPLES_PER_PIXEL 50 // Increase this to get better quality, but requires more time
 
 // Making a simple ray tracer
 // For each pixel, the ray tracer will send a ray and figure out the color met by those rays.
@@ -32,15 +32,15 @@ color ray_color(const ray &r, const hittable_list &world, int depth)
     {
         ray reflected_ray;
         color attenuation;
-
+        color emitted = rec.mat->emitted();
         // if ray is reflected
         if (rec.mat->scatter(r, rec, attenuation, reflected_ray))
         {
-            // attenuation is the color of the material
-            return attenuation * ray_color(reflected_ray, world, depth + 1);
+            // attenuation is the color of the material, and will cause bias to color (alter the color of further objects being hit by ray)
+            return emitted + attenuation * ray_color(reflected_ray, world, depth + 1);
         }
-        // else ray is absorbed
-        return color(0, 0, 0);
+        // else ray hit a light, return its light emission color
+        return emitted;
 
         // find the reflection ray
         // point3 random_reflect_target = rec.p + vec3::random_in_hemisphere(rec.normal);
@@ -50,13 +50,18 @@ color ray_color(const ray &r, const hittable_list &world, int depth)
         // return 0.5 * ray_color(ray(rec.p, random_reflect_target - rec.p), world, depth + 1);
     }
 
-    // Create a simple gradient depending on pixel position for now
+    // If ray hits nothing, we return background (blue sky gradient)
+
+    // Create a simple gradient depending on pixel position
     // Depending on height of ray, go from white to full red
     // unit_direction.y() goes 1 to -1, therefore add 1 to not have negative and divide by 0.5 to stay within 0 and 1
     // t now goes from 1 to 0
     vec3 unit_direction = r.direction();
     auto t = 0.5 * (unit_direction.y() + 1.0);
-    return (color(1.0, 1.0, 1.0) * t + color(0.5, 0, 0) * (1.0 - t));
+    return (color(1.0, 1.0, 1.0) * (1 - t) + color(0.5, 0.7, 1.0) * (t));
+    
+    // Black background
+    // return color(0,0,0);
 }
 
 int main()
@@ -80,16 +85,23 @@ int main()
     hittable_list world;
     lambertian lambertian1(color(0.8, 0.8, 0.0));
     lambertian lambertian2(color(0.7, 0.3, 0.3));
+    lambertian lambertian3(color(0.4, 0.2, 0.8));
+    lambertian lambertian4(color(0.4, 0.2, 0.8));
+    lambertian lambertian5(color(1.0, 0.0, 1.0));
+    lambertian lambertian6(color(0.1, 0.1, 0.8));
     // lambertian lambertian_red(red);
     // lambertian lambertian_green(green);
     // lambertian lambertian_cyan(cyan);
     // lambertian lambertian_white(white);
-    metal metal1(color(0.8, 0.8, 0.8));
+    metal metal1(color(0.8, 0.8, 0.8), 0.7);
+    dielectric dielectric1(1.5);
+    dielectric dielectric2(1.2);
     metal metal2(color(0.0, 0.5, 0.5));
+    diffuse_light light1(color(4.0, 4.0, 4.0));
     sphere sphere1(vec3(-0.75, -0.5, -1), 0.5, &lambertian1);
-    sphere sphere2(vec3(0.25, 0.5, -1.5), 0.5, &lambertian1);
-    sphere sphere3(vec3(0.0, 0.0, -30.0), 10.0, &lambertian2);
-    sphere sphere4(vec3(-1.0, 1.0, -0.5), 0.5, &metal2);
+    sphere sphere2(vec3(0.25, 0.5, -0.5), 0.15, &metal2);
+    sphere sphere3(vec3(0.62, 0.5, -1.0), 0.45, &lambertian3);
+    sphere sphere4(vec3(-1.0, 1.0, -0.5), 0.5, &light1);
     sphere sphere5(vec3(0, 0, -1), 0.5, &metal1);
     sphere sphere6(vec3(0, -100.5, -1), 100, &lambertian2);
     world.add(&sphere1);
@@ -132,7 +144,7 @@ int main()
                 ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
 
                 // summation of the pixel colors
-                pixel_color += ray_color(r, world, 0);
+                pixel_color += ray_color(r, world, 0);  
                 
             }
             // Get average of the samples for each pixel
