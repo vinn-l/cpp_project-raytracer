@@ -6,6 +6,7 @@
 #include "hittable_list.hpp"
 #include "hittable.hpp"
 #include <limits>
+#include <cstdio>
 
 #define MAX_DEPTH 50
 #define SAMPLES_PER_PIXEL 20 // Increase this to get better quality, but requires more time
@@ -33,7 +34,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth)
         // return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
 
         // find the reflection ray
-        point3 random_reflect_target = rec.p + rec.normal + vec3::random_in_unit_sphere();
+        point3 random_reflect_target = rec.p + vec3::random_in_hemisphere(rec.normal);
 
         // ray trace the reflection ray
         return 0.5 * ray_color(ray(rec.p, random_reflect_target - rec.p), world, depth + 1);
@@ -97,13 +98,13 @@ int main()
             for (int sample = 0; sample < SAMPLES_PER_PIXEL; sample++)
             {
                 // add a random value between 0 and 1 but not 1
-                auto u = (double(i) + rand()/(RAND_MAX + 1.0))/ (image_width - 1);  // u will go from 0 to 1
-                auto v = (double(j) + rand()/(RAND_MAX + 1.0))/ (image_height - 1); // v will go from 0 to 1
+                auto u = (double(i) + rand() / (RAND_MAX + 1.0)) / (image_width - 1);  // u will go from 0 to 1
+                auto v = (double(j) + rand() / (RAND_MAX + 1.0)) / (image_height - 1); // v will go from 0 to 1
 
                 ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
 
                 // summation of the pixel colors
-                pixel_color += ray_color(r, world, 0); 
+                pixel_color += ray_color(r, world, 0);
             }
             // Get average of the samples for each pixel
             pixel_color /= SAMPLES_PER_PIXEL;
