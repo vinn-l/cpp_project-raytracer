@@ -1,7 +1,7 @@
 #ifndef hittable_list_hpp
 #define hittable_list_hpp
 
-#include "hittable.hpp"
+#include "material.hpp"
 #include <vector>
 
 class hittable_list

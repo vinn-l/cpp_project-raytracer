@@ -4,8 +4,8 @@
 #include "color.hpp"
 #include "vec3.hpp"
 #include "ray.hpp"
-#include "hittable.hpp"
 #include <iostream>
+#include "material.hpp"
 
 // Sphere equation is x^2 + y^2 + z^2 = r^2
 
@@ -34,10 +34,11 @@ public:
     double radius;
     // radius of sphere squared
     double radius2;
-
+    material *mat;
     sphere(
         const vec3 &c,
-        const float &r) : center(c), radius(r), radius2(r * r)
+        const float &r,
+        material* mat) : center(c), radius(r), radius2(r * r), mat(mat)
     {
     }
 
@@ -93,9 +94,11 @@ public:
                 rec.p = r.at(rec.t);
                 rec.normal = normal(rec.p); // this normal is always outwards
                 rec.set_ray_side(r, rec.normal);
+                rec.mat = mat; // set the hit_record to this material
                 return true;
             }
-            else{
+            else
+            {
                 return false;
             }
         }

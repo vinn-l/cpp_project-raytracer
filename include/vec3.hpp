@@ -83,7 +83,7 @@ public:
         }
     }
 
-    vec3 static random_in_hemisphere(vec3 &normal)
+    vec3 static random_in_hemisphere(const vec3 &normal)
     {
         // pick random in unit sphere
         auto p = random_in_unit_sphere();
@@ -166,6 +166,11 @@ vec3 cross(const vec3 &u, const vec3 &v)
 vec3 normalize(vec3 v)
 {
     return v / v.length();
+}
+
+vec3 reflect(const vec3 &v, const vec3 &n)
+{
+    return v - 2 * dot(v, n) * n;
 }
 
 #endif

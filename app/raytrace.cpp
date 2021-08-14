@@ -4,9 +4,8 @@
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "hittable_list.hpp"
-#include "hittable.hpp"
+#include "material.hpp"
 #include <limits>
-#include <cstdio>
 
 #define MAX_DEPTH 50
 #define SAMPLES_PER_PIXEL 20 // Increase this to get better quality, but requires more time
@@ -31,13 +30,24 @@ color ray_color(const ray &r, const hittable_list &world, int depth)
     // we set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just reflected off, so we want to ignore these cases.
     if (world.hit_all(r, (double)0.001, std::numeric_limits<double>::infinity(), rec))
     {
-        // return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+        ray reflected_ray;
+        color attenuation;
+
+        // if ray is reflected
+        if (rec.mat->scatter(r, rec, attenuation, reflected_ray))
+        {
+            // attenuation is the color of the material
+            return attenuation * ray_color(reflected_ray, world, depth + 1);
+        }
+        // else ray is absorbed
+        return color(0, 0, 0);
 
         // find the reflection ray
-        point3 random_reflect_target = rec.p + vec3::random_in_hemisphere(rec.normal);
+        // point3 random_reflect_target = rec.p + vec3::random_in_hemisphere(rec.normal);
 
         // ray trace the reflection ray
-        return 0.5 * ray_color(ray(rec.p, random_reflect_target - rec.p), world, depth + 1);
+        // 0.5 here is to reduce the light intensity by 0.5 everytime it is reflected
+        // return 0.5 * ray_color(ray(rec.p, random_reflect_target - rec.p), world, depth + 1);
     }
 
     // Create a simple gradient depending on pixel position for now
@@ -56,14 +66,32 @@ int main()
     const int image_width = 500;
     const int image_height = (int)(image_width / asp_ratio);
 
+    // Some default colors
+    color red(1.0, 0.0, 0.0);
+    color yellow(1.0, 1.0, 0.0);
+    color green(0.0, 1.0, 0.0);
+    color cyan(0.0, 1.0, 1.0);
+    color blue(0.0, 0.0, 1.0);
+    color purple(1.0, 0.0, 1.0);
+    color white(1.0, 1.0, 1.0);
+    color black(0.0, 0.0, 0.0);
+
     // World
     hittable_list world;
-    sphere sphere1(vec3(-0.75, -0.5, -1), 0.5);
-    sphere sphere2(vec3(0.25, 0.5, -1.5), 0.5);
-    sphere sphere3(vec3(0.0, 0.0, -30.0), 10.0);
-    sphere sphere4(vec3(-1.0, 1.0, -0.5), 0.5);
-    sphere sphere5(vec3(0, 0, -1), 0.5);
-    sphere sphere6(vec3(0, -100.5, -1), 100);
+    lambertian lambertian1(color(0.8, 0.8, 0.0));
+    lambertian lambertian2(color(0.7, 0.3, 0.3));
+    // lambertian lambertian_red(red);
+    // lambertian lambertian_green(green);
+    // lambertian lambertian_cyan(cyan);
+    // lambertian lambertian_white(white);
+    metal metal1(color(0.8, 0.8, 0.8));
+    metal metal2(color(0.0, 0.5, 0.5));
+    sphere sphere1(vec3(-0.75, -0.5, -1), 0.5, &lambertian1);
+    sphere sphere2(vec3(0.25, 0.5, -1.5), 0.5, &lambertian1);
+    sphere sphere3(vec3(0.0, 0.0, -30.0), 10.0, &lambertian2);
+    sphere sphere4(vec3(-1.0, 1.0, -0.5), 0.5, &metal2);
+    sphere sphere5(vec3(0, 0, -1), 0.5, &metal1);
+    sphere sphere6(vec3(0, -100.5, -1), 100, &lambertian2);
     world.add(&sphere1);
     world.add(&sphere2);
     world.add(&sphere3);
@@ -105,6 +133,7 @@ int main()
 
                 // summation of the pixel colors
                 pixel_color += ray_color(r, world, 0);
+                
             }
             // Get average of the samples for each pixel
             pixel_color /= SAMPLES_PER_PIXEL;

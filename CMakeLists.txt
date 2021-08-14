@@ -9,8 +9,8 @@
 # set(CMAKE_VERBOSE_MAKEFILE true)
 
 # Specify random library headers and sources
-# set(thread_pool_header include/ra/thread_pool.hpp)
-# set(thread_pool_sources lib/thread_pool.cpp)
+set(material_header include/material.hpp)
+set(material_src lib/material.cpp)
 
 # Specify minimum required version
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
@@ -35,31 +35,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 add_executable(raytrace app/raytrace.cpp)
 # add_executable(test_thread_pool app/test_thread_pool.cpp)
 
-# Add thread pool library
-# add_library(thread_pool_lib ${thread_pool_sources} ${thread_pool_header})
-
-# Specify the include directories for library
-# target_link_libraries(test_queue PUBLIC Threads::Threads)
-
-# Specify the include directories for library
-# target_link_libraries(thread_pool_lib PUBLIC Threads::Threads)
-# target_link_libraries(test_thread_pool thread_pool_lib)
-
 # Specify the include directories for library
 target_include_directories(raytrace PUBLIC
  	include
 	"${CMAKE_CURRENT_BINARY_DIR}/include")
 
-# Specify the include directories for library
-# target_include_directories(test_thread_pool PUBLIC
-# 	include
-# 	"${CMAKE_CURRENT_BINARY_DIR}/include")
+# Add thread pool library
+# add_library(material_lib ${material_src})
 
 # Specify the include directories for library
-# target_include_directories(thread_pool_lib PUBLIC
-# 	include
-# 	"${CMAKE_CURRENT_BINARY_DIR}/include")
+# target_include_directories(material_lib PUBLIC
+#  	include
+#	"${CMAKE_CURRENT_BINARY_DIR}/include")
+
+# Specify the include directories for library
+# target_link_libraries(raytrace material_lib)
 
 # Install
 install(TARGETS raytrace DESTINATION test)
-# install(TARGETS test_thread_pool DESTINATION test)
