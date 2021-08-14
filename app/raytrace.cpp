@@ -6,6 +6,9 @@
 #include "hittable_list.hpp"
 #include "material.hpp"
 #include <limits>
+#include <string>
+#include <iostream>
+#include <sstream>
 
 #define MAX_DEPTH 50
 #define SAMPLES_PER_PIXEL 50 // Increase this to get better quality, but requires more time
@@ -15,7 +18,7 @@
 // 1. Shoot a ray from the camera.
 // 2. Determine which objects the ray intersects.
 // 3. Get the color of that intersection point.
-color ray_color(const ray &r, const hittable_list &world, int depth)
+color ray_color(const ray &r, const hittable_list &world, int depth, color *background_color_top, color *background_color_bottom)
 {
     hit_record rec;
 
@@ -37,7 +40,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth)
         if (rec.mat->scatter(r, rec, attenuation, reflected_ray))
         {
             // attenuation is the color of the material, and will cause bias to color (alter the color of further objects being hit by ray)
-            return emitted + attenuation * ray_color(reflected_ray, world, depth + 1);
+            return emitted + attenuation * ray_color(reflected_ray, world, depth + 1, background_color_top, background_color_bottom);
         }
         // else ray hit a light, return its light emission color
         return emitted;
@@ -58,17 +61,100 @@ color ray_color(const ray &r, const hittable_list &world, int depth)
     // t now goes from 1 to 0
     vec3 unit_direction = r.direction();
     auto t = 0.5 * (unit_direction.y() + 1.0);
-    return (color(1.0, 1.0, 1.0) * (1 - t) + color(0.5, 0.7, 1.0) * (t));
-    
+    return (*background_color_bottom * (1 - t) + *background_color_top * (t));
+
     // Black background
     // return color(0,0,0);
 }
 
 int main()
 {
+    // Take input from stdin
+    // const char config[] = "url=http://example.com\n"
+    //                       "file=main.exe\n"
+    //                       "true=0";
+
+    // std::istringstream is_file(config);
+
+    std::vector<std::vector<std::string>> lines;
+    std::string line;
+    std::string settings[3];
+    std::string background[4];
+    std::string sphere_arr[10]; // If metal 10, if light or diffuse, will have 9
+
+    int line_number = 0;
+    while (std::getline(std::cin, line))
+    {
+        std::vector<std::string> args;
+        std::string word;
+        std::istringstream iss(line);
+        while (iss >> word)
+        {
+            args.push_back(word);
+            // std::cerr << word;
+        }
+
+        // std::cerr << std::endl;
+        // store into vector
+        lines.push_back(args);
+
+        // // If line_number = 0, means settings
+        // if (line_number == 0)
+        // {
+        //     while (std::cin >> word)
+        //     {
+        //         samples_p_pixel = word;
+        //         i++;
+        //     }
+        // }
+
+        // // Parse line by line
+        // int i = 0;
+
+        // std::string word;
+        // while (std::cin >> word)
+        // {
+        //     std::cerr << word << std::endl;
+        // }
+        // line_number++;
+    }
+
+    auto samples_p_pixel = std::stoi(lines[0][1]);
+    auto image_width = std::stoi(lines[0][2]);
+
+    auto background_colour_top = color(std::stod(lines[1][1]), std::stod(lines[1][2]), std::stod(lines[1][3]));
+    auto background_colour_bottom = color(std::stod(lines[1][4]), std::stod(lines[1][5]), std::stod(lines[1][6]));
+    hittable_list world;
+    // number of objects
+    size_t num_spheres = lines.size() - 2;
+    for (int i = 0; i < num_spheres; i++)
+    {
+        std::vector<std::string> args = lines[i + 2];
+        if (args[5] == "lambertian")
+        {
+            std::cerr << "lambertian" << std::endl;
+            std::cerr << args[1] << " " << args[2] << " " << args[3] << " " << args[4] << " " << args[5] << " " << args[6] << " " << args[7] << " " << args[8] << std::endl;
+            world.add(&sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), &lambertian(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])))));
+        }
+        else if (args[5] == "light")
+        {
+            std::cerr << "light" << std::endl;
+            world.add(&sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), &diffuse_light(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])))));
+        }
+        else if (args[5] == "metal")
+        {
+            std::cerr << "metal" << std::endl;
+            world.add(&sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), &metal(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])), std::stod(args[9]))));
+        }
+        else{
+            std::cerr << "Error: Invalid material type" << std::endl;
+            return 1;
+        }
+    }
+
     // Image Properties
     const auto asp_ratio = 16.0 / 9.0;
-    const int image_width = 500;
+    // const int image_width = 500;
     const int image_height = (int)(image_width / asp_ratio);
 
     // Some default colors
@@ -82,7 +168,7 @@ int main()
     color black(0.0, 0.0, 0.0);
 
     // World
-    hittable_list world;
+    // hittable_list world;
     lambertian lambertian1(color(0.8, 0.8, 0.0));
     lambertian lambertian2(color(0.7, 0.3, 0.3));
     lambertian lambertian3(color(0.4, 0.2, 0.8));
@@ -96,20 +182,20 @@ int main()
     metal metal1(color(0.8, 0.8, 0.8), 0.7);
     dielectric dielectric1(1.5);
     dielectric dielectric2(1.2);
-    metal metal2(color(0.0, 0.5, 0.5));
+    metal metal2(color(0.0, 0.5, 0.5), 1.0);
     diffuse_light light1(color(4.0, 4.0, 4.0));
-    sphere sphere1(vec3(-0.75, -0.5, -1), 0.5, &lambertian1);
+    sphere sphere1(vec3(-0.75, 0, -1), 0.5, &lambertian1);
     sphere sphere2(vec3(0.25, 0.5, -0.5), 0.15, &metal2);
     sphere sphere3(vec3(0.62, 0.5, -1.0), 0.45, &lambertian3);
-    sphere sphere4(vec3(-1.0, 1.0, -0.5), 0.5, &light1);
+    sphere sphere4(vec3(-1.0, 0.75, -0.5), 0.5, &light1);
     sphere sphere5(vec3(0, 0, -1), 0.5, &metal1);
     sphere sphere6(vec3(0, -100.5, -1), 100, &lambertian2);
-    world.add(&sphere1);
-    world.add(&sphere2);
-    world.add(&sphere3);
-    world.add(&sphere4);
-    world.add(&sphere5);
-    world.add(&sphere6);
+    // world.add(&sphere1);
+    // world.add(&sphere2);
+    // world.add(&sphere3);
+    // world.add(&sphere4);
+    // world.add(&sphere5);
+    // world.add(&sphere6);
 
     // Camera Properties
     auto viewport_height = 2.0;
@@ -135,7 +221,7 @@ int main()
             color pixel_color(0, 0, 0);
 
             // Shoot multiple samples for anti-aliasing
-            for (int sample = 0; sample < SAMPLES_PER_PIXEL; sample++)
+            for (int sample = 0; sample < samples_p_pixel; sample++)
             {
                 // add a random value between 0 and 1 but not 1
                 auto u = (double(i) + rand() / (RAND_MAX + 1.0)) / (image_width - 1);  // u will go from 0 to 1
@@ -144,11 +230,10 @@ int main()
                 ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
 
                 // summation of the pixel colors
-                pixel_color += ray_color(r, world, 0);  
-                
+                pixel_color += ray_color(r, world, 0, &background_colour_top, &background_colour_bottom);
             }
             // Get average of the samples for each pixel
-            pixel_color /= SAMPLES_PER_PIXEL;
+            pixel_color /= samples_p_pixel;
 
             // Gamma-correct for gamma=2.0.
             pixel_color = color(sqrt(pixel_color.r()), sqrt(pixel_color.g()), sqrt(pixel_color.b()));
