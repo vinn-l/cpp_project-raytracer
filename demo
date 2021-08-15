@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+../test/raytrace < input.txt >> output.ppm
+display output.ppm
+	
