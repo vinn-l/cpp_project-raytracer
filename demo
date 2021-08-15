@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 rm -f output.ppm
-.$(dirname "$0")/../test/raytrace < input.txt >> output.ppm
+$(dirname "$0")/../test/raytrace < input.txt >> output.ppm
 display output.ppm
 	
