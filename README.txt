@@ -17,6 +17,9 @@ Description :
     https://raytracing.github.io/books/RayTracingTheNextWeek.html
     Because these source's guide is pretty detailed, and that the raytracer mostly involves mathematical formulas, the code may have resulted to be pretty similar to the guide.
 
+To run with input.txt file :
+    ./tmp/install/test/raytrace < input.txt >> output.ppm
+
 Input file :
     A .txt input file can be created to easily input parameters for setting the image properties, background, and building the world with objects.
 
@@ -55,6 +58,3 @@ Viewport :
     (0, 0, 0) being the camera, the viewport has a height of 2, and a width of 3.56. The projection point (camera) to this plane is set to 1.
     The viewport's top left corner is at (-1.78, 1, -1), top right corner is at (1.78, 1, -1), 
     The viewport's bottom left corner is at (-1.78, -1, -1), and bottom right corner is at (1.78, -1, -1).
-
-The way the user will render a custom scene would be to run a command such as:
-    ./tmp/build/Debug/raytrace.exe < input.txt >> output.ppm

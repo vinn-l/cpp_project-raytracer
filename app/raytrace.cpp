@@ -133,8 +133,8 @@ int main()
     const double viewport_width = viewport_height * asp_ratio; // 3.56
     
     // Distance between the projection point(camera) and the projection plane
-    // Smaller means more zoomed in
-    // Larger means more zoomed out
+    // Larger means more zoomed in
+    // Smaller means more zoomed out
     const double focal_length = 1.0;
 
     const point3 origin = point3(0, 0, 0);
@@ -166,7 +166,7 @@ int main()
                 // u ranges from 0 to 1 representing width, v ranges from 0 to 1 representing height, therefore multiply with horizontal and vertical.
                 // lower_left_corner represents the bottom left pixel point3.
                 // So basically, lower_left_corner + u*horizontal + (1 - v)*vertical gives the pixel position (viewport coordinates), then minus origin position to get the ray direction.
-                // 1 - v becase v goes from 0 to 1, but we are writing our PPM image from top to bottom, so we need to go from 1 to 0.
+                // 1 - v becase v goes from 0 to 1, but we are writing our PPM image from top to bottom, so we need to shoot rays from 1 to 0.
                 ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
 
                 // Summation of the samples
