@@ -19,11 +19,17 @@ target_include_directories(raytrace PUBLIC
  	include
 	"${CMAKE_CURRENT_BINARY_DIR}/include")
 
+# Check if output.ppm exists, delete if so
+if (EXISTS ${CMAKE_SOURCE_DIR}/output.ppm)
+	delete_file(${CMAKE_SOURCE_DIR}/output.ppm)
+endif()
+
 # Create script
 file(
 	WRITE ${CMAKE_INSTALL_PREFIX}/tmp/demo
 	"#!/usr/bin/env bash
 	${CMAKE_INSTALL_PREFIX}/test/raytrace < ${CMAKE_SOURCE_DIR}/input.txt >> ${CMAKE_SOURCE_DIR}/output.ppm
+	display output.ppm
 	")
 
 # Add execute permissions
