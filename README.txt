@@ -50,5 +50,11 @@ Arguments :
     Notice that metal requires an extra argument for fuzz, this represents how reflective or fuzzy the metal is ranging from 0 to 1, 0 meaning that the metal is highly reflective.
     There are a few input.txt files in the repository to demonstrate examples.
 
+Viewport :
+    The viewport is set to be 16:9 ratio, and the image is rendered to the viewport.
+    (0, 0, 0) being the camera, the viewport has a height of 2, and a width of 3.56. The projection point (camera) to this plane is set to 1.
+    The viewport's top left corner is at (-1.78, 1, -1), top right corner is at (1.78, 1, -1), 
+    The viewport's bottom left corner is at (-1.78, -1, -1), and bottom right corner is at (1.78, -1, -1).
+
 The way the user will render a custom scene would be to run a command such as:
     ./tmp/build/Debug/raytrace.exe < input.txt >> output.ppm

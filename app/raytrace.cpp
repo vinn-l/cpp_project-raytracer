@@ -131,7 +131,8 @@ int main()
     // Camera Properties
     const double viewport_height = 2.0;
     const double viewport_width = viewport_height * asp_ratio; // 3.56
-    // Distance between the projection plane(camera) and the projection point
+    
+    // Distance between the projection point(camera) and the projection plane
     // Smaller means more zoomed in
     // Larger means more zoomed out
     const double focal_length = 1.0;
