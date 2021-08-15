@@ -11,11 +11,11 @@
 #include <sstream>
 
 #define MAX_DEPTH 50
-#define SAMPLES_PER_PIXEL 50 // Increase this to get better quality, but requires more time
+// #define SAMPLES_PER_PIXEL 50 // Increase this to get better quality, but requires more time
 
-// Making a simple ray tracer
-// For each pixel, the ray tracer will send a ray and figure out the color met by those rays.
-// 1. Shoot a ray from the camera.
+// A simple ray tracer
+// For each pixel, the ray tracer will send (samples_p_pixel) number of rays and figure out the color met by those rays.
+// 1. Shoot multiple ray from the camera. (Rays are slightly altered directions but still towards that pixel)
 // 2. Determine which objects the ray intersects.
 // 3. Get the color of that intersection point.
 color ray_color(const ray &r, const hittable_list &world, int depth, color *background_color_top, color *background_color_bottom)
@@ -44,13 +44,6 @@ color ray_color(const ray &r, const hittable_list &world, int depth, color *back
         }
         // else ray hit a light, return its light emission color
         return emitted;
-
-        // find the reflection ray
-        // point3 random_reflect_target = rec.p + vec3::random_in_hemisphere(rec.normal);
-
-        // ray trace the reflection ray
-        // 0.5 here is to reduce the light intensity by 0.5 everytime it is reflected
-        // return 0.5 * ray_color(ray(rec.p, random_reflect_target - rec.p), world, depth + 1);
     }
 
     // If ray hits nothing, we return background (blue sky gradient)
@@ -62,9 +55,6 @@ color ray_color(const ray &r, const hittable_list &world, int depth, color *back
     vec3 unit_direction = r.direction();
     auto t = 0.5 * (unit_direction.y() + 1.0);
     return (*background_color_bottom * (1 - t) + *background_color_top * (t));
-
-    // Black background
-    // return color(0,0,0);
 }
 
 int main()
@@ -92,11 +82,12 @@ int main()
     auto background_colour_top = color(std::stod(lines[1][1]), std::stod(lines[1][2]), std::stod(lines[1][3]));
     auto background_colour_bottom = color(std::stod(lines[1][4]), std::stod(lines[1][5]), std::stod(lines[1][6]));
     hittable_list world;
-    // number of objects
-    size_t num_spheres = lines.size() - 2;
+
+    // Number of objects
+    size_t num_objects = lines.size() - 2;
     std::vector<material> material_objs;
     std::vector<hittable> hittable_objs;
-    for (int i = 0; i < num_spheres; i++)
+    for (int i = 0; i < num_objects; i++)
     {
         std::vector<std::string> args = lines[i + 2];
         if (args[5] == "lambertian")
@@ -120,9 +111,16 @@ int main()
             sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
             world.add(sphere_obj);
         }
+        else if (args[5] == "glass")
+        {
+            // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
+            material *material_obj = new dielectric(std::stod(args[6]));
+            sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
+            world.add(sphere_obj);
+        }
         else
         {
-            std::cerr << "Error: Invalid material type" << std::endl;
+            std::cerr << "Error: Invalid material type " << args[5] << std::endl;
             return 1;
         }
     }
@@ -165,7 +163,10 @@ int main()
     // Camera Properties
     auto viewport_height = 2.0;
     auto viewport_width = viewport_height * asp_ratio; // 3.56
-    auto focal_length = 1.0;                           // distance between the projection plane(camera) and the projection point
+    // Distance between the projection plane(camera) and the projection point
+    // Smaller means more zoomed in
+    // Larger means more zoomed out
+    auto focal_length = 1.0;
 
     auto origin = point3(0, 0, 0);
     auto horizontal = vec3(viewport_width, 0, 0);
@@ -188,13 +189,18 @@ int main()
             // Shoot multiple samples for anti-aliasing
             for (int sample = 0; sample < samples_p_pixel; sample++)
             {
-                // add a random value between 0 and 1 but not 1
+                // Add a random value between 0 and 1 for multiple samples
                 auto u = (double(i) + rand() / (RAND_MAX + 1.0)) / (image_width - 1);  // u will go from 0 to 1
                 auto v = (double(j) + rand() / (RAND_MAX + 1.0)) / (image_height - 1); // v will go from 0 to 1
 
+                // Ray with origin at camera, direction going towards the pixel, remember u is the pixel at horizontal (width), v is pixel at vertical (height)
+                // u ranges from 0 to 1 representing width, v ranges from 0 to 1 representing height, therefore multiply with horizontal and vertical.
+                // lower_left_corner represents the bottom left pixel point3.
+                // So basically, lower_left_corner + u*horizontal + (1 - v)*vertical gives the pixel position (viewport coordinates), then minus origin position to get the ray direction.
+                // 1 - v becase v goes from 0 to 1, but we are writing our PPM image from top to bottom, so we need to go from 1 to 0.
                 ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
 
-                // summation of the pixel colors
+                // Summation of the samples
                 pixel_color += ray_color(r, world, 0, &background_colour_top, &background_colour_bottom);
             }
             // Get average of the samples for each pixel
@@ -202,17 +208,6 @@ int main()
 
             // Gamma-correct for gamma=2.0.
             pixel_color = color(sqrt(pixel_color.r()), sqrt(pixel_color.g()), sqrt(pixel_color.b()));
-
-            // auto b = 0.25;
-
-            // Ray with origin at camera, direction going towards the pixel, remember u is the pixel at horizontal (width), v is pixel at vertical (height)
-            // u ranges from 0 to 1 representing width, v ranges from 0 to 1 representing height, therefore multiply with horizontal and vertical.
-            // lower_left_corner represents the bottom left pixel point3.
-            // So basically, lower_left_corner + u*horizontal + (1 - v)*vertical gives the pixel position, then minus origin position to get the ray direction.
-            // 1 - v becase v goes from 0 to 1, but we are writing our PPM image from top to bottom, so we need to go from 1 to 0.
-            // ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
-
-            // auto pixel = ray_color(r, world, 0);
 
             // r, g, b are in the range [0,1]
             write_color(std::cout, pixel_color);
