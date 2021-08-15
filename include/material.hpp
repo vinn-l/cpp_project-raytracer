@@ -1,4 +1,4 @@
-// All mathematical formulas for the materials are referenced from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+// Many mathematical formulas for the materials are referenced from https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
 #ifndef material_hpp
 #define material_hpp
