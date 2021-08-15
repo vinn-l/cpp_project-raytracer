@@ -1,3 +1,5 @@
+// Ray class is studied from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+
 // A ray's function is P(t) = A + tb, where P is the ray's position, A is the ray's origin, and b is the ray's direction. t stands for time.
 #ifndef ray_hpp
 #define ray_hpp

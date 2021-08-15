@@ -1,4 +1,4 @@
-// Sphere formulas are referenced from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+// Sphere class and function formulas are studied from https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
 #ifndef sphere_hpp
 #define sphere_hpp

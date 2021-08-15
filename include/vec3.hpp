@@ -1,3 +1,5 @@
+// Vec3 class is partially studied from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+
 #ifndef vec3_hpp
 #define vec3_hpp
 

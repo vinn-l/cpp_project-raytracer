@@ -1,3 +1,5 @@
+// Hittable_list is partially studied from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+
 #ifndef hittable_list_hpp
 #define hittable_list_hpp
 

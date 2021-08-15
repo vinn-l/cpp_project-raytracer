@@ -1,4 +1,5 @@
-// Many mathematical formulas for the material light interaction are referenced from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+// Materials and their functions/maths are studied from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+// and light material from https://raytracing.github.io/books/RayTracingTheNextWeek.html
 
 #ifndef material_hpp
 #define material_hpp
