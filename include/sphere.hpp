@@ -1,3 +1,5 @@
+// Sphere formulas are referenced from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+
 #ifndef sphere_hpp
 #define sphere_hpp
 
@@ -43,8 +45,8 @@ public:
     {
     }
 
-    // returns the value of t where the ray P(t) hits the sphere, -1 if it doesn't hit
-    // note that this currently also returns true for values of t being negative (meaning sphere being behind the camera) This is a TODO to fix.
+    // Returns the value of t where the ray P(t) hits the sphere, -1 if it doesn't hit
+    // Note that this currently also returns true for values of t being negative (meaning sphere being behind the camera) This is a TODO to fix.
     double intersect(const ray &r) const
     {
         // b is direction of ray
