@@ -21,7 +21,7 @@ target_include_directories(raytrace PUBLIC
 
 # Check if output.ppm exists, delete if so
 if (EXISTS ${CMAKE_SOURCE_DIR}/output.ppm)
-	delete_file(${CMAKE_SOURCE_DIR}/output.ppm)
+	file(REMOVE ${CMAKE_SOURCE_DIR}/output.ppm)
 endif()
 
 # Create script
