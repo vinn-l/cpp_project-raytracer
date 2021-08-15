@@ -69,18 +69,9 @@ color ray_color(const ray &r, const hittable_list &world, int depth, color *back
 
 int main()
 {
-    // Take input from stdin
-    // const char config[] = "url=http://example.com\n"
-    //                       "file=main.exe\n"
-    //                       "true=0";
-
-    // std::istringstream is_file(config);
-
+    // Input file parser
     std::vector<std::vector<std::string>> lines;
     std::string line;
-    std::string settings[3];
-    std::string background[4];
-    std::string sphere_arr[10]; // If metal 10, if light or diffuse, will have 9
 
     int line_number = 0;
     while (std::getline(std::cin, line))
@@ -91,32 +82,8 @@ int main()
         while (iss >> word)
         {
             args.push_back(word);
-            // std::cerr << word;
         }
-
-        // std::cerr << std::endl;
-        // store into vector
         lines.push_back(args);
-
-        // // If line_number = 0, means settings
-        // if (line_number == 0)
-        // {
-        //     while (std::cin >> word)
-        //     {
-        //         samples_p_pixel = word;
-        //         i++;
-        //     }
-        // }
-
-        // // Parse line by line
-        // int i = 0;
-
-        // std::string word;
-        // while (std::cin >> word)
-        // {
-        //     std::cerr << word << std::endl;
-        // }
-        // line_number++;
     }
 
     auto samples_p_pixel = std::stoi(lines[0][1]);
@@ -127,26 +94,34 @@ int main()
     hittable_list world;
     // number of objects
     size_t num_spheres = lines.size() - 2;
+    std::vector<material> material_objs;
+    std::vector<hittable> hittable_objs;
     for (int i = 0; i < num_spheres; i++)
     {
         std::vector<std::string> args = lines[i + 2];
         if (args[5] == "lambertian")
         {
-            std::cerr << "lambertian" << std::endl;
-            std::cerr << args[1] << " " << args[2] << " " << args[3] << " " << args[4] << " " << args[5] << " " << args[6] << " " << args[7] << " " << args[8] << std::endl;
-            world.add(&sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), &lambertian(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])))));
+            // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
+            material *material_obj = new lambertian(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])));
+            sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
+            world.add(sphere_obj);
         }
         else if (args[5] == "light")
         {
-            std::cerr << "light" << std::endl;
-            world.add(&sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), &diffuse_light(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])))));
+            // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
+            material *material_obj = new diffuse_light(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])));
+            sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
+            world.add(sphere_obj);
         }
         else if (args[5] == "metal")
         {
-            std::cerr << "metal" << std::endl;
-            world.add(&sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), &metal(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])), std::stod(args[9]))));
+            // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
+            material *material_obj = new metal(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])), std::stod(args[9]));
+            sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
+            world.add(sphere_obj);
         }
-        else{
+        else
+        {
             std::cerr << "Error: Invalid material type" << std::endl;
             return 1;
         }
@@ -157,39 +132,29 @@ int main()
     // const int image_width = 500;
     const int image_height = (int)(image_width / asp_ratio);
 
-    // Some default colors
-    color red(1.0, 0.0, 0.0);
-    color yellow(1.0, 1.0, 0.0);
-    color green(0.0, 1.0, 0.0);
-    color cyan(0.0, 1.0, 1.0);
-    color blue(0.0, 0.0, 1.0);
-    color purple(1.0, 0.0, 1.0);
-    color white(1.0, 1.0, 1.0);
-    color black(0.0, 0.0, 0.0);
-
     // World
     // hittable_list world;
-    lambertian lambertian1(color(0.8, 0.8, 0.0));
-    lambertian lambertian2(color(0.7, 0.3, 0.3));
-    lambertian lambertian3(color(0.4, 0.2, 0.8));
-    lambertian lambertian4(color(0.4, 0.2, 0.8));
-    lambertian lambertian5(color(1.0, 0.0, 1.0));
-    lambertian lambertian6(color(0.1, 0.1, 0.8));
+    // lambertian lambertian1(color(0.8, 0.8, 0.0));
+    // lambertian lambertian2(color(0.7, 0.3, 0.3));
+    // lambertian lambertian3(color(0.4, 0.2, 0.8));
+    // lambertian lambertian4(color(0.4, 0.2, 0.8));
+    // lambertian lambertian5(color(1.0, 0.0, 1.0));
+    // lambertian lambertian6(color(0.1, 0.1, 0.8));
     // lambertian lambertian_red(red);
     // lambertian lambertian_green(green);
     // lambertian lambertian_cyan(cyan);
     // lambertian lambertian_white(white);
-    metal metal1(color(0.8, 0.8, 0.8), 0.7);
-    dielectric dielectric1(1.5);
-    dielectric dielectric2(1.2);
-    metal metal2(color(0.0, 0.5, 0.5), 1.0);
-    diffuse_light light1(color(4.0, 4.0, 4.0));
-    sphere sphere1(vec3(-0.75, 0, -1), 0.5, &lambertian1);
-    sphere sphere2(vec3(0.25, 0.5, -0.5), 0.15, &metal2);
-    sphere sphere3(vec3(0.62, 0.5, -1.0), 0.45, &lambertian3);
-    sphere sphere4(vec3(-1.0, 0.75, -0.5), 0.5, &light1);
-    sphere sphere5(vec3(0, 0, -1), 0.5, &metal1);
-    sphere sphere6(vec3(0, -100.5, -1), 100, &lambertian2);
+    // metal metal1(color(0.8, 0.8, 0.8), 0.7);
+    // dielectric dielectric1(1.5);
+    // dielectric dielectric2(1.2);
+    // metal metal2(color(0.0, 0.5, 0.5), 0.0);
+    // diffuse_light light1(color(4.0, 4.0, 4.0));
+    // sphere sphere1(vec3(-0.75, 0, -1), 0.5, &lambertian1);
+    // sphere sphere2(vec3(0.25, 0.5, -0.5), 0.15, &metal2);
+    // sphere sphere3(vec3(0.62, 0.5, -1.0), 0.45, &lambertian3);
+    // sphere sphere4(vec3(-1.0, 0.75, -0.5), 0.5, &light1);
+    // sphere sphere5(vec3(0, 0, -1), 0.5, &metal1);
+    // sphere sphere6(vec3(0, -100.5, -1), 100, &lambertian2);
     // world.add(&sphere1);
     // world.add(&sphere2);
     // world.add(&sphere3);

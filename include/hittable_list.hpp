@@ -25,7 +25,6 @@ public:
         hit_record curr_record;
         bool hit_something = false;
         auto t = t_max;
-
         // Loop each hittables in list
         for (auto i = 0; i < hittables.size(); i++)
         {
