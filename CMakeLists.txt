@@ -20,7 +20,7 @@ target_include_directories(raytrace PUBLIC
 	"${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # Move demo to bin
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/demo ${CMAKE_SOURCE_DIR}/input.txt DESTINATION bin/)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/demo DESTINATION bin/)
 
 # Install
 install(TARGETS raytrace DESTINATION test)
