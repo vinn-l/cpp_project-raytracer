@@ -10,6 +10,14 @@ public:
     // Constructor
     hittable_list(){};
 
+    // Destructor
+    ~hittable_list(){
+        // Delete all hittables created with new
+        for(auto &hittable : hittables){
+            delete hittable;
+        }
+    };
+
     void add(hittable* object){
         hittables.push_back(object);
     }
@@ -28,14 +36,16 @@ public:
         // Loop each hittables in list
         for (auto i = 0; i < hittables.size(); i++)
         {
-            // If the ray hits the hittable, and that t is smaller than the t currently, means the object is nearer to camera, thus store into curr_record
+            // If the ray hits the hittable, and that t is smaller than the t currently, means the smaller t hitpoint is nearer to camera, thus store this t into curr_record
             // Arrow because hittables[i] is a pointer hittable *
             if (hittables[i]->hit(ray_in, t_min, t, curr_record))
             {
                 hit_something = true;
 
-                // set t to the smallest t value
+                // Set t to the smallest t value
                 t = curr_record.t;
+
+                // Update the record reference being passed to this function
                 rec = curr_record;
             }
         }
@@ -43,7 +53,7 @@ public:
     }
 
 private:
-    // list of hittable
+    // List of hittable objects
     std::vector<hittable*> hittables;
 };
 

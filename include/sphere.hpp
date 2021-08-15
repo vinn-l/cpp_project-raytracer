@@ -92,8 +92,7 @@ public:
                     rec.t = root2;
                 }
                 rec.p = r.at(rec.t);
-                rec.normal = normal(rec.p); // this normal is always outwards
-                rec.set_ray_side(r, rec.normal);
+                vec3 outward_normal = normal(rec.p); // this normal is always outwards
                 rec.mat = mat; // set the hit_record to this material
                 return true;
             }
