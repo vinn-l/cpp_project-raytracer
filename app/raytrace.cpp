@@ -19,29 +19,29 @@
 // For each pixel, the ray tracer will send (samples_p_pixel) number of rays and figure out the color met by those rays.
 // 1. Shoot multiple ray from the camera. (Rays are slightly altered directions but still towards that pixel)
 // 2. Determine which objects the ray intersects.
-// 3. Stops when it either hits a light source, it reflected too many times, or it was absorbed by metal object.
+// 3. Stops when it either hits a light source, it scattered too many times, or it was absorbed by metal object.
 color ray_color(const ray &r, const hittable_list &world, int depth, const color background_color_top, const color background_color_bottom)
 {
     hit_record rec;
 
-    // If we reflected way to many times, light is all absorbed.
+    // If we reflect/scatter way to many times, light is all absorbed.
     if (depth > MAX_DEPTH)
     {
         return color(0, 0, 0);
     }
 
     // Find the closest hittable and render that hittable's color
-    // We set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just reflected off, so we want to ignore these cases.
+    // We set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just scattered off, so we want to ignore these cases.
     if (world.hit_all(r, (double)0.001, std::numeric_limits<double>::infinity(), rec))
     {
-        ray reflected_ray;
+        ray scattered_ray;
         color attenuation;
         color emitted = rec.mat->emitted();
         // If ray is reflected
-        if (rec.mat->scatter(r, rec, attenuation, reflected_ray))
+        if (rec.mat->scatter(r, rec, attenuation, scattered_ray))
         {
             // Attenuation is the color of the material, and will cause bias to color (alter the color of further objects being hit by ray)
-            return attenuation * ray_color(reflected_ray, world, depth + 1, background_color_top, background_color_bottom);
+            return attenuation * ray_color(scattered_ray, world, depth + 1, background_color_top, background_color_bottom);
         }
 
         // If no scatter, means ray either hit a light or ray is absorbed by metal

@@ -84,7 +84,7 @@ public:
     {
         // Pick random in unit sphere
         auto p = random_in_unit_sphere();
-        // If point is in reflecting hemisphere, return it else return negative (dot product with normal to find out)
+        // If point is in scattering hemisphere, return it else return negative of it (dot product with normal to find out)
         if (dot(p, normal) > 0) // If p same direction as normal
         {
             return p;

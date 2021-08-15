@@ -108,7 +108,7 @@ public:
         return false;
     }
 
-    // To get the direction of the normal of a sphere (used for reflecting rays)
+    // To get the direction of the normal of a sphere (used for reflecting/scattering rays)
     // Basically, we take the hit point of the ray and subtract with the centre of the sphere. (P - C)
     vec3 normal(const vec3 &hit_point) const
     {
