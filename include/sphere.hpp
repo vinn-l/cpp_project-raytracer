@@ -26,7 +26,7 @@
 // (P(t) - C).(P(t) - C) = r^2
 // (A + t*b - C).(A + t*b - C) = r^2
 // (t^2)*b.b + 2tb.(A-C) + (A-C).(A-C) - r^2 = 0
-// The above equation is to find the roots t
+// The above quadratic equation is used to find the roots t in the function hit below
 
 class sphere : public hittable
 {
@@ -41,30 +41,12 @@ public:
     sphere(
         const vec3 &c,
         const double &r,
-        material* mat) : center(c), radius(r), radius2(r * r), mat(mat)
+        material *mat) : center(c), radius(r), radius2(r * r), mat(mat)
     {
     }
 
-    // Returns the value of t where the ray P(t) hits the sphere, -1 if it doesn't hit
-    // Note that this currently also returns true for values of t being negative (meaning sphere being behind the camera) This is a TODO to fix.
-    double intersect(const ray &r) const
-    {
-        // b is direction of ray
-        // A is the origin of the ray
-        // C is the center of the sphere
-        // r is radius of the sphere
-        vec3 a_min_c = r.origin() - center;                        // A - C
-        auto a_quad = dot(r.direction(), r.direction());           // b^2
-        auto b_quad = 2 * dot(r.direction(), a_min_c);             // 2*b.(A - C)
-        auto c_quad = dot(a_min_c, a_min_c) - radius2;             // (A - C).(A - C) - r^2
-        auto discriminant = b_quad * b_quad - 4 * a_quad * c_quad; // b^2 - 4*a*c
-        if (discriminant < 0)
-            return -1;
-
-        return (-b_quad - std::sqrt(discriminant)) / (2 * a_quad); // return only smallest t because that is what the camera sees
-    }
-
-    // Similar to intersect, but have t_min and t_max, and store t and normal into the hit_record instead of returning
+    // Returns true where the ray P(t) hits the sphere, false if it doesn't hit
+    // Only returns if the root value t is within t_min and t_max, and store t and normal into the hit_record.
     bool hit(const ray &r, double t_min, double t_max, hit_record &rec) const override
     {
         // b is direction of ray
@@ -96,7 +78,7 @@ public:
                 }
                 rec.p = r.at(rec.t);
                 rec.normal = normal(rec.p); // This normal is always outwards
-                rec.mat = mat; // Set the hit_record to this material
+                rec.mat = mat;              // Set the hit_record to this material
                 return true;
             }
             else

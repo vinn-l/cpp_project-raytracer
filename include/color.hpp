@@ -131,11 +131,4 @@ double dot(const color &u, const color &v)
     return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];
 }
 
-color cross(const color &u, const color &v)
-{
-    return color(u.e[1] * v.e[2] - u.e[2] * v.e[1],
-                 u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                 u.e[0] * v.e[1] - u.e[1] * v.e[0]);
-}
-
 #endif
