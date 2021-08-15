@@ -8,6 +8,7 @@
 #include <limits>
 #include <string>
 #include <sstream>
+#include <cmath>
 
 #define MAX_DEPTH 50
 // #define SAMPLES_PER_PIXEL 50 // Increase this to get better quality, but requires more time

@@ -2,6 +2,7 @@
 #define vec3_hpp
 
 #include <iostream>
+#include <cmath>
 
 // The vec3 class
 class vec3

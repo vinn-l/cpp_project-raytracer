@@ -6,6 +6,7 @@
 #include "ray.hpp"
 #include "material.hpp"
 #include <iostream>
+#include <cmath>
 
 // Sphere equation is x^2 + y^2 + z^2 = r^2
 
@@ -101,6 +102,8 @@ public:
                 return false;
             }
         }
+        // Should not reach here
+        return false;
     }
 
     // To get the direction of the normal of a sphere (used for reflecting rays)
