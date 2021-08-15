@@ -8,7 +8,6 @@
 #include "vec3.hpp"
 #include "sphere.hpp"
 #include "color.hpp"
-#include <vector>
 
 class material;
 

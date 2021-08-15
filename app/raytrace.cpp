@@ -1,13 +1,12 @@
-#include <iostream>
 #include "vec3.hpp"
 #include "color.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "hittable_list.hpp"
 #include "material.hpp"
+#include <iostream>
 #include <limits>
 #include <string>
-#include <iostream>
 #include <sstream>
 
 #define MAX_DEPTH 50
@@ -175,7 +174,7 @@ int main()
             pixel_color /= samples_p_pixel;
 
             // Gamma-correct for gamma=2.0.
-            pixel_color = color(sqrt(pixel_color.r()), sqrt(pixel_color.g()), sqrt(pixel_color.b()));
+            pixel_color = color(std::sqrt(pixel_color.r()), std::sqrt(pixel_color.g()), std::sqrt(pixel_color.b()));
 
             // r, g, b are in the range [0,1]
             write_color(std::cout, pixel_color);

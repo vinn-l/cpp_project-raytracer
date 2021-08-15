@@ -4,8 +4,8 @@
 #include "color.hpp"
 #include "vec3.hpp"
 #include "ray.hpp"
-#include <iostream>
 #include "material.hpp"
+#include <iostream>
 
 // Sphere equation is x^2 + y^2 + z^2 = r^2
 
@@ -58,7 +58,7 @@ public:
         if (discriminant < 0)
             return -1;
 
-        return (-b_quad - sqrt(discriminant)) / (2 * a_quad); // return only smallest t because that is what the camera sees
+        return (-b_quad - std::sqrt(discriminant)) / (2 * a_quad); // return only smallest t because that is what the camera sees
     }
 
     // Similar to intersect, but have t_min and t_max, and store t and normal into the hit_record instead of returning
@@ -77,8 +77,8 @@ public:
             return false;
         else
         {
-            auto root1 = (-b_quad - sqrt(discriminant)) / (2 * a_quad);
-            auto root2 = (-b_quad + sqrt(discriminant)) / (2 * a_quad);
+            auto root1 = (-b_quad - std::sqrt(discriminant)) / (2 * a_quad);
+            auto root2 = (-b_quad + std::sqrt(discriminant)) / (2 * a_quad);
             // if roots is within t_min and t_max
             if (t_min < root1 && root1 < t_max || t_min < root2 && root2 < t_max)
             {

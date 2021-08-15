@@ -1,6 +1,6 @@
 // A ray's function is P(t) = A + tb, where P is the ray's position, A is the ray's origin, and b is the ray's direction. t stands for time.
-#ifndef RAY_H
-#define RAY_H
+#ifndef ray_hpp
+#define ray_hpp
 
 #include "vec3.hpp"
 
