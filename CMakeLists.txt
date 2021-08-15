@@ -20,17 +20,20 @@ target_include_directories(raytrace PUBLIC
 	"${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # Create script
-file(WRITE ${CMAKE_INSTALL_PREFIX}/bin/demo
-"#!/usr/bin/env bash
-${CMAKE_INSTALL_PREFIX}/test/raytrace < ${CMAKE_SOURCE_DIR}/input.txt >> ${CMAKE_SOURCE_DIR}/output.ppm
-")
+file(
+	WRITE ${CMAKE_INSTALL_PREFIX}/tmp/demo
+	"#!/usr/bin/env bash
+	${CMAKE_INSTALL_PREFIX}/test/raytrace < ${CMAKE_SOURCE_DIR}/input.txt >> ${CMAKE_SOURCE_DIR}/output.ppm
+	")
 
 # Add execute permissions
 file(
-    COPY ${CMAKE_INSTALL_PREFIX}/bin/demo
+    COPY ${CMAKE_INSTALL_PREFIX}/tmp/demo
     DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
-    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
+    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+# Remove old file
+file(REMOVE_RECURSE ${CMAKE_INSTALL_PREFIX}/tmp/)
 
 # Install
 install(TARGETS raytrace DESTINATION test)
