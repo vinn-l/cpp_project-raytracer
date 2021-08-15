@@ -5,12 +5,13 @@ Description :
     A simple ray tracer that works with only sphere shapes.
     A ray tracer is simple. One or multiple rays are projected for each pixel, and we follow the path of each ray.
     The ray will continuously scatter off objects in the world, and stops in the following cases:
-        1. The ray hits a light emissive material
-        2. The ray have scattered too many times (currently set to 50) and basically lost all light (return black)
+        1. The ray hits a light emissive material  (return RGB value)
+        2. The ray have scattered too many times or is absorbed (return black)
         3. The ray ends up projecting into space, not hitting any object (return the background color)
 
     Each pixels will have (samples/pixel) amount of rays projected, and an average of each rays return value in that pixel is taken to get the color of the pixel.
     This is because there are randomness in scattering for materials (except metals with 0.0 fuzz), and thus multiple samples are used to get an average.
+    Each samples are also not being projected at the exact same location, but randomly altered by small amount, but still within the same pixel location.
 
     Many of the math involved and the steps needed to create a ray tracing renderer is studied from these sources.
     https://raytracing.github.io/books/RayTracingInOneWeekend.html

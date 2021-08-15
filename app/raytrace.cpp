@@ -31,7 +31,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth, const color
     }
 
     // Find the closest hittable and render that hittable's color
-    // We set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just scattered off, so we want to ignore these cases.
+    // We set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just scattered off.
     if (world.hit_all(r, (double)0.001, std::numeric_limits<double>::infinity(), rec))
     {
         ray scattered_ray;
@@ -161,8 +161,8 @@ int main()
             for (int sample = 0; sample < samples_p_pixel; sample++)
             {
                 // Add a random value between 0 and 1 for multiple samples
-                auto u = (double(i) + rand() / (RAND_MAX + 1.0)) / (image_width - 1);  // u will go from 0 to 1
-                auto v = (double(j) + rand() / (RAND_MAX + 1.0)) / (image_height - 1); // v will go from 0 to 1
+                auto u = (double(i) + rand() / (RAND_MAX + 1.0)) / (image_width - 1);
+                auto v = (double(j) + rand() / (RAND_MAX + 1.0)) / (image_height - 1);
 
                 // Ray with origin at camera, direction going towards the pixel, remember u is the pixel at horizontal (width), v is pixel at vertical (height)
                 // u ranges from 0 to 1 representing width, v ranges from 0 to 1 representing height, therefore multiply with horizontal and vertical.
