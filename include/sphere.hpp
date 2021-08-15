@@ -80,10 +80,10 @@ public:
         {
             auto root1 = (-b_quad - std::sqrt(discriminant)) / (2 * a_quad);
             auto root2 = (-b_quad + std::sqrt(discriminant)) / (2 * a_quad);
-            // if roots is within t_min and t_max
+            // If roots is within t_min and t_max
             if (t_min < root1 && root1 < t_max || t_min < root2 && root2 < t_max)
             {
-                // store closest root's t, p and normal to hit_record
+                // Store closest root's t, p and normal to hit_record
                 if (root1 < root2)
                 {
                     rec.t = root1;
@@ -93,8 +93,8 @@ public:
                     rec.t = root2;
                 }
                 rec.p = r.at(rec.t);
-                rec.normal = normal(rec.p); // this normal is always outwards
-                rec.mat = mat; // set the hit_record to this material
+                rec.normal = normal(rec.p); // This normal is always outwards
+                rec.mat = mat; // Set the hit_record to this material
                 return true;
             }
             else

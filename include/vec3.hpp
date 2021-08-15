@@ -58,7 +58,7 @@ public:
     }
 
     // Random function that returns a vec3 that is randomized for diffuse/Lambertian materials
-    // will be between 0 <= r < 1
+    // Will be between 0 <= r < 1
     double static random()
     {
         return rand() / double(RAND_MAX + 1.0);
@@ -75,17 +75,17 @@ public:
         {
             auto p = random(-1, 1);
             if (p.length() * p.length() >= 1)
-                continue; // if p is not in unit sphere, try again
+                continue; // If p is not in unit sphere, try again
             return p;
         }
     }
 
     vec3 static random_in_hemisphere(const vec3 &normal)
     {
-        // pick random in unit sphere
+        // Pick random in unit sphere
         auto p = random_in_unit_sphere();
-        // if point is in reflecting hemisphere, return it else return negative (dot product with normal to find out)
-        if (dot(p, normal) > 0) // if p same direction as normal
+        // If point is in reflecting hemisphere, return it else return negative (dot product with normal to find out)
+        if (dot(p, normal) > 0) // If p same direction as normal
         {
             return p;
         }

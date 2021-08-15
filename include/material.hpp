@@ -67,7 +67,7 @@ public:
         }
         else
         {
-            // maximum fuzz is 1
+            // Maximum fuzz is 1
             fuzz = 1;
         }
     }

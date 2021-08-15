@@ -29,8 +29,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth, const color
     }
 
     // Find the closest hittable and render that hittable's color
-    // hit(const ray &ray_in, double t_min, double t_max, hit_record &rec)
-    // we set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just reflected off, so we want to ignore these cases.
+    // We set t_min as 0.001 because sometimes the root is calculated to be very small value that is just intersecting with the object that the ray just reflected off, so we want to ignore these cases.
     if (world.hit_all(r, (double)0.001, std::numeric_limits<double>::infinity(), rec))
     {
         ray reflected_ray;
@@ -51,9 +50,10 @@ color ray_color(const ray &r, const hittable_list &world, int depth, const color
 
     // Create a simple gradient depending on pixel position
     // Depending on height of ray, go from white to full red
-    // unit_direction.y() goes 1 to -1, therefore add 1 to not have negative and divide by 0.5 to stay within 0 and 1
-    // t now goes from 1 to 0
-    vec3 unit_direction = r.direction();
+    // unit_direction.y() goes -1 to 1, therefore add 1 to not have negative and divide by 0.5 to stay within 0 and 1
+    // If y closer to 1, t will be closer to 1
+    // If y is close to -1, t will be closer to 0
+    vec3 unit_direction = normalize(r.direction());
     auto t = 0.5 * (unit_direction.y() + 1.0);
     return (background_color_bottom * (1 - t) + background_color_top * (t));
 }
