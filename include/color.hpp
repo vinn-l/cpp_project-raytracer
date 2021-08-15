@@ -4,7 +4,7 @@
 #include "color.hpp"
 #include <iostream>
 
-// The color class, similar to color but seperated into individual classes for error checking.
+// The color class, similar to vec3 but seperated into individual classes for error checking.
 class color
 {
 public:

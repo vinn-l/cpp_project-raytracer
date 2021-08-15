@@ -4,7 +4,8 @@
 #include <iostream>
 #include <cmath>
 
-// The vec3 class
+// The vec3 class to hold x, y, z values and perform vector arithmetic
+// point3 is also an alias to this class
 class vec3
 {
 public:
@@ -57,18 +58,6 @@ public:
         return std::sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
     }
 
-    // Random function that returns a vec3 that is randomized for diffuse/Lambertian materials
-    // Will be between 0 <= r < 1
-    double static random()
-    {
-        return rand() / double(RAND_MAX + 1.0);
-    }
-
-    vec3 static random(double min, double max)
-    {
-        return vec3(min + random() * (max - min), min + random() * (max - min), min + random() * (max - min));
-    }
-
     vec3 static random_in_unit_sphere()
     {
         while (true)
@@ -80,6 +69,7 @@ public:
         }
     }
 
+    // This is used for lambertian distribution
     vec3 static random_in_hemisphere(const vec3 &normal)
     {
         // Pick random in unit sphere
@@ -96,6 +86,18 @@ public:
     }
 
 private:
+    vec3 static random(double min, double max)
+    {
+        return vec3(min + random() * (max - min), min + random() * (max - min), min + random() * (max - min));
+    }
+
+    // Random function that returns a vec3 that is randomized for diffuse/Lambertian materials
+    // Will be between 0 <= r < 1
+    double static random()
+    {
+        return rand() / double(RAND_MAX + 1.0);
+    }
+
     friend std::ostream &operator<<(std::ostream &out, const vec3 &v);
     friend vec3 operator+(const vec3 &u, const vec3 &v);
     friend vec3 operator-(const vec3 &u, const vec3 &v);

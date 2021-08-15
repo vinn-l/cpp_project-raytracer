@@ -1,4 +1,4 @@
-// Raytracing procedure are referenced from https://raytracing.github.io/books/RayTracingInOneWeekend.html
+// Raytracing concepts and procedure are referenced from https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
 #include "vec3.hpp"
 #include "color.hpp"

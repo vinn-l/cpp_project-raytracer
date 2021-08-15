@@ -13,10 +13,11 @@ Description :
     This is because there are randomness in scattering for materials (except metals with 0.0 fuzz), and thus multiple samples are used to get an average.
     Each samples are also not being projected at the exact same location, but randomly altered by small amount, but still within the same pixel location.
 
-    Many of the math involved and the steps needed to create a ray tracing renderer is studied from these sources.
-    https://raytracing.github.io/books/RayTracingInOneWeekend.html
-    https://raytracing.github.io/books/RayTracingTheNextWeek.html
-    Because these source's guide is pretty detailed, and that the raytracer mostly involves mathematical formulas, the code may have resulted to be pretty similar to the guide.
+    Most code written follows the guidance provided by the resources mentioned below. 
+    Many of the math involved and the steps needed to create a ray tracing renderer are also studied from these sources.
+        https://raytracing.github.io/books/RayTracingInOneWeekend.html
+        https://raytracing.github.io/books/RayTracingTheNextWeek.html
+    Because these source's steps are pretty detailed, and that the raytracer mostly involves mathematical formulas, the code may have resulted to be pretty similar to the resource.
 
 To run with input.txt file :
     ./tmp/install/test/raytrace < input.txt >> output.ppm
