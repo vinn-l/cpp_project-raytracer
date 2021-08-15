@@ -51,7 +51,8 @@ Arguments :
     All colors ranges is normalized to ranges 0 to 1 instead of using 0 to 255.
     LIGHT material types can have values larger than 1 for their colors.
 
-    Notice that metal requires an extra argument for fuzz, this represents how reflective or fuzzy the metal is ranging from 0 to 1, 0 meaning that the metal is highly reflective.
+    Notice that metal requires an extra argument for fuzz, this represents how reflective or fuzzy the metal is ranging from 0 to 1, 0 meaning that the metal is fully reflective.
+    Lambertian materials will scatter rays, but with a lambertian distribution.
     There are a few input.txt files in the repository to demonstrate examples.
 
 Viewport :
