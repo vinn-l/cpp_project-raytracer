@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-./$(dirname "$0")/test/raytrace < input.txt >> output.ppm
+./$(dirname "$0")/../test/raytrace < input.txt >> output.ppm
 display output.ppm
 	
