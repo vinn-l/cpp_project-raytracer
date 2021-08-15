@@ -17,7 +17,7 @@
 // For each pixel, the ray tracer will send (samples_p_pixel) number of rays and figure out the color met by those rays.
 // 1. Shoot multiple ray from the camera. (Rays are slightly altered directions but still towards that pixel)
 // 2. Determine which objects the ray intersects.
-// 3. Get the color of that intersection point.
+// 3. Stops when it either hits a light source, it reflected too many times, or it was absorbed by metal object.
 color ray_color(const ray &r, const hittable_list &world, int depth, const color background_color_top, const color background_color_bottom)
 {
     hit_record rec;
@@ -42,7 +42,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth, const color
             // Attenuation is the color of the material, and will cause bias to color (alter the color of further objects being hit by ray)
             return attenuation * ray_color(reflected_ray, world, depth + 1, background_color_top, background_color_bottom);
         }
-        
+
         // If no scatter, means ray either hit a light or ray is absorbed by metal
         return emitted;
     }

@@ -75,7 +75,7 @@ public:
 
     virtual bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const
     {
-        vec3 scatter_direction = reflect(r_in.direction().normalize(), rec.normal);
+        vec3 scatter_direction = reflect(normalize(r_in.direction()), rec.normal);
 
         // Fuzz will add some randomness to alter abit of the reflection.
         scattered = ray(rec.p, scatter_direction + fuzz * vec3::random_in_unit_sphere());

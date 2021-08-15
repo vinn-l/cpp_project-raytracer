@@ -59,15 +59,6 @@ public:
         return std::sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
     }
 
-    vec3 &normalize()
-    {
-        double l = length();
-        e[0] /= l;
-        e[1] /= l;
-        e[2] /= l;
-        return *this;
-    }
-
     // Random function that returns a vec3 that is randomized for diffuse/Lambertian materials
     // will be between 0 <= r < 1
     double static random()
