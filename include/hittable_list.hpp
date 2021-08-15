@@ -4,6 +4,7 @@
 #include "material.hpp"
 #include <vector>
 
+// Class to represent the world by holding a list of all the objects that are added to the world.
 class hittable_list
 {
 public:

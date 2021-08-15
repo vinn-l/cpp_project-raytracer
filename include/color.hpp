@@ -4,8 +4,6 @@
 #include "color.hpp"
 #include <iostream>
 
-using std::sqrt;
-
 // The color class, similar to color but seperated into individual classes for error checking.
 class color
 {
@@ -30,6 +28,14 @@ public:
         e[0] += v.e[0];
         e[1] += v.e[1];
         e[2] += v.e[2];
+        return *this;
+    }
+
+    color &operator-=(const color &v)
+    {
+        e[0] -= v.e[0];
+        e[1] -= v.e[1];
+        e[2] -= v.e[2];
         return *this;
     }
 

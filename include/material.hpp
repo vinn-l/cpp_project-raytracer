@@ -12,7 +12,7 @@
 
 class material;
 
-// a record of a hit, to hold the point of the hit, the normal(for sphere) and the t value for the hit
+// A record of a hit, to hold the point of the hit, the normal(for sphere) and the t value and the material of the object being hit.
 struct hit_record
 {
     point3 p;
@@ -27,6 +27,7 @@ public:
     virtual bool hit(const ray &r, double t_min, double t_max, hit_record &rec) const = 0;
 };
 
+// Material abstract class to contain the abstract method hit for each different material to implement
 class material
 {
 public:
@@ -75,11 +76,14 @@ public:
     virtual bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const
     {
         vec3 scatter_direction = reflect(r_in.direction().normalize(), rec.normal);
-        // fuzz will multiply some randomness to alter abit of the reflection.
+
+        // Fuzz will add some randomness to alter abit of the reflection.
         scattered = ray(rec.p, scatter_direction + fuzz * vec3::random_in_unit_sphere());
         attenuation = albedo;
+        
         // Only return if ray is not scattered into the surface. if ray scatters into surface, threat it as it got absorbed.
-        return (dot(scattered.direction(), rec.normal) > 0);
+        // It is only possible for ray to scatter into surface if the fuzz made it so.
+        return (dot(scattered.direction(), rec.normal) >= 0);
     }
 
     color albedo;
@@ -94,7 +98,7 @@ public:
     bool scatter(
         const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const
     {
-        // light does not scatter but immediately returns the light
+        // Light does not scatter but immediately returns the light
         return false;
     }
 

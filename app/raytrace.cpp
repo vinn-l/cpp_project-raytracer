@@ -18,7 +18,7 @@
 // 1. Shoot multiple ray from the camera. (Rays are slightly altered directions but still towards that pixel)
 // 2. Determine which objects the ray intersects.
 // 3. Get the color of that intersection point.
-color ray_color(const ray &r, const hittable_list &world, int depth, color *background_color_top, color *background_color_bottom)
+color ray_color(const ray &r, const hittable_list &world, int depth, const color background_color_top, const color background_color_bottom)
 {
     hit_record rec;
 
@@ -36,17 +36,18 @@ color ray_color(const ray &r, const hittable_list &world, int depth, color *back
         ray reflected_ray;
         color attenuation;
         color emitted = rec.mat->emitted();
-        // if ray is reflected
+        // If ray is reflected
         if (rec.mat->scatter(r, rec, attenuation, reflected_ray))
         {
-            // attenuation is the color of the material, and will cause bias to color (alter the color of further objects being hit by ray)
-            return emitted + attenuation * ray_color(reflected_ray, world, depth + 1, background_color_top, background_color_bottom);
+            // Attenuation is the color of the material, and will cause bias to color (alter the color of further objects being hit by ray)
+            return attenuation * ray_color(reflected_ray, world, depth + 1, background_color_top, background_color_bottom);
         }
-        // else ray hit a light, return its light emission color
+        
+        // If no scatter, means ray either hit a light or ray is absorbed by metal
         return emitted;
     }
 
-    // If ray hits nothing, we return background (blue sky gradient)
+    // If ray hits nothing, we return background color
 
     // Create a simple gradient depending on pixel position
     // Depending on height of ray, go from white to full red
@@ -54,7 +55,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth, color *back
     // t now goes from 1 to 0
     vec3 unit_direction = r.direction();
     auto t = 0.5 * (unit_direction.y() + 1.0);
-    return (*background_color_bottom * (1 - t) + *background_color_top * (t));
+    return (background_color_bottom * (1 - t) + background_color_top * (t));
 }
 
 int main()
@@ -76,11 +77,11 @@ int main()
         lines.push_back(args);
     }
 
-    auto samples_p_pixel = std::stoi(lines[0][1]);
-    auto image_width = std::stoi(lines[0][2]);
+    const int samples_p_pixel = std::stoi(lines[0][1]);
+    const int image_width = std::stoi(lines[0][2]);
 
-    auto background_colour_top = color(std::stod(lines[1][1]), std::stod(lines[1][2]), std::stod(lines[1][3]));
-    auto background_colour_bottom = color(std::stod(lines[1][4]), std::stod(lines[1][5]), std::stod(lines[1][6]));
+    const color background_colour_top = color(std::stod(lines[1][1]), std::stod(lines[1][2]), std::stod(lines[1][3]));
+    const color background_colour_bottom = color(std::stod(lines[1][4]), std::stod(lines[1][5]), std::stod(lines[1][6]));
     hittable_list world;
 
     // Number of objects
@@ -89,22 +90,27 @@ int main()
     std::vector<hittable> hittable_objs;
     for (int i = 0; i < num_objects; i++)
     {
+        // if line is empty, skip
+        if (lines[i + 2].empty())
+        {
+            continue;
+        }
         std::vector<std::string> args = lines[i + 2];
-        if (args[5] == "lambertian")
+        if (args[5] == "LAMBERTIAN")
         {
             // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
             material *material_obj = new lambertian(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])));
             sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
             world.add(sphere_obj);
         }
-        else if (args[5] == "light")
+        else if (args[5] == "LIGHT")
         {
             // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
             material *material_obj = new diffuse_light(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])));
             sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
             world.add(sphere_obj);
         }
-        else if (args[5] == "metal")
+        else if (args[5] == "METAL")
         {
             // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
             material *material_obj = new metal(color(std::stod(args[6]), std::stod(args[7]), std::stod(args[8])), std::stod(args[9]));
@@ -119,52 +125,21 @@ int main()
     }
 
     // Image Properties
-    const auto asp_ratio = 16.0 / 9.0;
-    // const int image_width = 500;
+    const double asp_ratio = 16.0 / 9.0;
     const int image_height = (int)(image_width / asp_ratio);
 
-    // World
-    // hittable_list world;
-    // lambertian lambertian1(color(0.8, 0.8, 0.0));
-    // lambertian lambertian2(color(0.7, 0.3, 0.3));
-    // lambertian lambertian3(color(0.4, 0.2, 0.8));
-    // lambertian lambertian4(color(0.4, 0.2, 0.8));
-    // lambertian lambertian5(color(1.0, 0.0, 1.0));
-    // lambertian lambertian6(color(0.1, 0.1, 0.8));
-    // lambertian lambertian_red(red);
-    // lambertian lambertian_green(green);
-    // lambertian lambertian_cyan(cyan);
-    // lambertian lambertian_white(white);
-    // metal metal1(color(0.8, 0.8, 0.8), 0.7);
-    // dielectric dielectric1(1.5);
-    // dielectric dielectric2(1.2);
-    // metal metal2(color(0.0, 0.5, 0.5), 0.0);
-    // diffuse_light light1(color(4.0, 4.0, 4.0));
-    // sphere sphere1(vec3(-0.75, 0, -1), 0.5, &lambertian1);
-    // sphere sphere2(vec3(0.25, 0.5, -0.5), 0.15, &metal2);
-    // sphere sphere3(vec3(0.62, 0.5, -1.0), 0.45, &lambertian3);
-    // sphere sphere4(vec3(-1.0, 0.75, -0.5), 0.5, &light1);
-    // sphere sphere5(vec3(0, 0, -1), 0.5, &metal1);
-    // sphere sphere6(vec3(0, -100.5, -1), 100, &lambertian2);
-    // world.add(&sphere1);
-    // world.add(&sphere2);
-    // world.add(&sphere3);
-    // world.add(&sphere4);
-    // world.add(&sphere5);
-    // world.add(&sphere6);
-
     // Camera Properties
-    auto viewport_height = 2.0;
-    auto viewport_width = viewport_height * asp_ratio; // 3.56
+    const double viewport_height = 2.0;
+    const double viewport_width = viewport_height * asp_ratio; // 3.56
     // Distance between the projection plane(camera) and the projection point
     // Smaller means more zoomed in
     // Larger means more zoomed out
-    auto focal_length = 1.0;
+    const double focal_length = 1.0;
 
-    auto origin = point3(0, 0, 0);
-    auto horizontal = vec3(viewport_width, 0, 0);
-    auto vertical = vec3(0, viewport_height, 0);
-    auto lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
+    const point3 origin = point3(0, 0, 0);
+    const vec3 horizontal = vec3(viewport_width, 0, 0);
+    const vec3 vertical = vec3(0, viewport_height, 0);
+    const point3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
 
     // Create PPM Image
     std::cerr << "Creating PPM Image..." << std::endl;
@@ -194,7 +169,7 @@ int main()
                 ray r(origin, lower_left_corner + u * horizontal + (1 - v) * vertical - origin);
 
                 // Summation of the samples
-                pixel_color += ray_color(r, world, 0, &background_colour_top, &background_colour_bottom);
+                pixel_color += ray_color(r, world, 0, background_colour_top, background_colour_bottom);
             }
             // Get average of the samples for each pixel
             pixel_color /= samples_p_pixel;
