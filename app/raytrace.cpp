@@ -111,6 +111,13 @@ int main()
             sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
             world.add(sphere_obj);
         }
+        else if (args[5] == "glass")
+        {
+            // New required here because its in a for loop and will get overriden if dynamic allocation is not done.
+            material *material_obj = new dielectric(std::stod(args[6]));
+            sphere *sphere_obj = new sphere(vec3(std::stod(args[1]), std::stod(args[2]), std::stod(args[3])), std::stod(args[4]), material_obj);
+            world.add(sphere_obj);
+        }
         else
         {
             std::cerr << "Error: Invalid material type " << args[5] << std::endl;
